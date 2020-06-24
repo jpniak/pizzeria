@@ -91,6 +91,7 @@
             thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
             thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
             thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
+            thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper);
       }
       
       initAccordion(){
@@ -192,11 +193,23 @@
       /* END IF: if option is selected and option is not default */
               }
       /* START ELSE IF: if option is not selected and option is default */
-                   else if (optionSelected == false && option.default ) {
+                   else if (!optionSelected && option.default ) {
         /* deduct price of option from price */
                   price = price - option.price;
       /* END ELSE IF: if option is not selected and option is default */
                    }
+              //kod z submodułu 7.6 - obrazki
+              const images = thisProduct.imageWrapper.querySelectorAll('.' + (paramId) + '-' + (optionId));
+              if (optionSelected){ 
+                  for(let image of images) {
+                  image.classList.add(classNames.menuProduct.imageVisible);
+                  }
+                  } else {
+                      for(let image of images) {
+                  image.classList.remove(classNames.menuProduct.imageVisible);
+                  }
+                  
+                  }
     /* END LOOP: for each optionId in param.options */
           }
   /* END LOOP: for each paramId in thisProduct.data.params */
