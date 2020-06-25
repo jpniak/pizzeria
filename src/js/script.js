@@ -113,10 +113,10 @@
             event.preventDefault();
 
       /* toggle active class on element of thisProduct */
-              thisProduct.element.classList.toggle('active');
+             thisProduct.element.classList.toggle('active');
 
       /* find all active products */
-            const activeProducts = document.querySelectorAll('.product .active');
+            const activeProducts = document.querySelectorAll('.product');
 
       /* START LOOP: for each active product */
             for (let activeProduct of activeProducts) {
@@ -202,8 +202,8 @@
                   price = price - option.price;
       /* END ELSE IF: if option is not selected and option is default */
                    }
-              //kod z submodułu 7.6 - obrazki
-              const images = thisProduct.imageWrapper.querySelectorAll('.' + (paramId) + '-' + (optionId));
+                            //kod z submodułu 7.6 - obrazki
+              const images = thisProduct.imageWrapper.querySelectorAll('.' + paramId + '-' + optionId);
               if (optionSelected){ 
                   for(let image of images) {
                   image.classList.add(classNames.menuProduct.imageVisible);
@@ -214,8 +214,10 @@
                   }
                   
                   }
+
     /* END LOOP: for each optionId in param.options */
           }
+              
   /* END LOOP: for each paramId in thisProduct.data.params */
         }
             /* multiple price by amount */ // pochodzi z modułu o dodawaniu ilości - widgety...
