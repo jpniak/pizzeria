@@ -188,6 +188,7 @@ const templates = {
 
           thisProduct.cartButton.addEventListener('click', function(event){
             event.preventDefault();
+            thisProduct.addToCart();
             thisProduct.processOrder();
             });
 
@@ -202,6 +203,7 @@ const templates = {
           const formData = utils.serializeFormToObject(thisProduct.form);
           //console.log('formData: ', formData);
           
+            thisProduct.params = {}
   /* set variable price to equal thisProduct.data.price */
           let price = thisProduct.data.price;
           //console.log('cena: ', price);
@@ -239,6 +241,15 @@ const templates = {
                             //kod z submodułu 7.6 - obrazki
               const images = thisProduct.imageWrapper.querySelectorAll('.' + paramId + '-' + optionId);
               if (optionSelected){ 
+                  if(!thisProduct.params[paramId]){
+                      thisProduct.params[paramId] = {
+                          label: param.label,
+                          options: {},
+                      };
+                  }
+                  thisProduct.params[paramId].options[optionId] = option.label;
+                  
+                  
                   for(let image of images) {
                   image.classList.add(classNames.menuProduct.imageVisible);
                   }
@@ -255,11 +266,17 @@ const templates = {
   /* END LOOP: for each paramId in thisProduct.data.params */
         }
             /* multiple price by amount */ // pochodzi z modułu o dodawaniu ilości - widgety...
-            price = price * thisProduct.amountWidget.value;
+            //price = price * thisProduct.amountWidget.value;
+            thisProduct.priceSingle = price;
+            thisProduct.price = thisProduct.priceSingle * thisProduct.amountWidget.value;
+
             
   /* set the contents of thisProduct.priceElem to HAVE THE SAME VALUE AS the variable price */
-          thisProduct.priceElem.innerHTML = price
+          thisProduct.priceElem.innerHTML = thisProduct.price;
+
+         //thisProduct.priceElem.innerHTML = price
          // console.log('the final price is: ', price);
+            console.log('thisProduct.params: ', thisProduct.params)
 
     } 
       
@@ -271,6 +288,14 @@ const templates = {
               thisProduct.processOrder()
           });
       }
+      addToCart(){
+          const thisProduct = this;
+          
+          thisProduct.name = thisProduct.data.name;
+          thisProduct.amount = thisProduct.amountWidget.value;
+              
+          app.cart.add(thisProduct);
+        }
   }
 
       class AmountWidget {
@@ -359,6 +384,7 @@ const templates = {
             const thisCart =  this;
             thisCart.dom = {};
             thisCart.dom.wrapper = element;
+            thisCart.dom.productList = thisCart.dom.wrapper.querySelector(select.cart.productList); // zdefiniowane w 8.3
             thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger);
         }
         
@@ -368,6 +394,20 @@ const templates = {
             thisCart.dom.toggleTrigger.addEventListener('click', function(){
                 thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);              
             });
+        }
+        
+        add(menuProduct){
+            const thisCart = this;
+            console.log ('adding product: ', menuProduct);
+            
+            /* tworzymy kod HTML i zapisujemy go w stałej generatedHTML */
+            const generatedHTML = templates.cartProduct(menuProduct);
+            
+            /*  ten kod zamieniamy na elementy DOM i zapisujemy w następnej stałej – generatedDOM */
+            const generatedDOM = utils.createDOMFromHTML(generatedHTML);
+            
+            /* Dodajemy te elementy DOM do thisCart.dom.productList */
+            thisCart.dom.productList.appendChild(generatedDOM);
         }
     }  
 
