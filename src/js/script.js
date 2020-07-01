@@ -407,6 +407,9 @@ const templates = {
             thisCart.dom.productList.addEventListener('myEvent', function(){
                 thisCart.update();
             });
+            thisCart.dom.productList.addEventListener('remove', function(){
+                thisCart.remove(event.detail.cartProduct);
+            });
         }
         
         add(menuProduct){
@@ -448,6 +451,19 @@ const templates = {
                 }
             }
         }
+        
+        remove(cartProduct){
+            //deklaruję stałą thisCart, tak samo jak w innych metodach
+            const thisCart = this;
+            //deklaruję stałą index, której wartością będzie indeks cartProduct w tablicy thisCart.products,
+            const index = thisCart.products[cartProduct];
+            //używam metody splice do usunięcia elementu o tym indeksie z tablicy thisCart.products
+            thisCart.products.splice(thisCart.products[cartProduct], 1);
+            //usuwam z DOM element cartProduct.dom.wrapper
+            cartProduct.dom.wrapper.remove();
+            //wywołuję metodę update w celu przeliczenia sum po usunięciu produktu
+            thisCart.update();
+        }
     }  
     
     class CartProduct {
@@ -462,6 +478,7 @@ const templates = {
             thisCartProduct.params = JSON.parse(JSON.stringify(menuProduct.params));
             thisCartProduct.getElements(element);
             thisCartProduct.initAmountWidget();
+            thisCartProduct.initActions();
             //console.log('new cartProduct: ', thisCartProduct);
             //console.log('productData: ', menuProduct);            
         }
@@ -488,8 +505,33 @@ const templates = {
               thisCartProduct.dom.price.innerHTML = thisCartProduct.price;
                 });
       }
+        
+        remove(){
+            const thisCartProduct = this;
+            const event = new CustomEvent('remove', {
+                bubbles: true,
+                detail: {
+                cartProduct: thisCartProduct,
+            },
+            });
+            thisCartProduct.dom.wrapper.dispatchEvent(event);
+            console.log('metoda remove wystartowała');
     }
-
+        initActions(){
+            const thisCartProduct = this;
+            
+            thisCartProduct.dom.edit.addEventListener('click', function(event){
+                event.preventDefault;
+                console.log('kliknieto guzik edit')
+            });
+            thisCartProduct.dom.remove.addEventListener('click', function (event){
+                event.preventDefault;
+                console.log('kliknieto guzik remove')
+                thisCartProduct.remove();
+                
+            });
+        }
+    }
     
     const app = {
     initMenu: function(){
