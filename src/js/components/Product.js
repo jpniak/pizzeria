@@ -66,7 +66,9 @@ export class Product {
       thisProduct.element.classList.toggle('active');
 
       /* find all active products */
-      const activeProducts = document.querySelectorAll('.product');
+      const activeProducts = document.querySelectorAll(select.all.menuProductsActive);
+
+      //const activeProducts = document.querySelectorAll('.product');
 
       /* START LOOP: for each active product */
       for (let activeProduct of activeProducts) {

@@ -45,9 +45,9 @@ const app = {
     console.log('settings:', settings);
     //console.log('templates:', templates);
     
-    thisApp.initPages();
-    thisApp.initData();
-    thisApp.initCart();
+    //thisApp.initPages();
+    //thisApp.initData();
+    //thisApp.initCart();
     //thisApp.initMenu();
   },
 
@@ -70,12 +70,25 @@ const app = {
     thisApp.pages = Array.from(document.querySelector(select.containerOf.pages).children);
     thisApp.navLinks = Array.from(document.querySelectorAll(select.nav.links));
     
-    //thisApp.activatePage(thisApp.pages[0].id); kasujemy w obsłudze podstron
-    
+    /* */
     let pagesMatchingHash = [];
+
+    if(window.location.hash.length > 2) {
+      const idFromHash = window.location.hash.replace('#/', '');
+
+      pagesMatchingHash = thisApp.pages.filter(function(page) {
+        return page.id == idFromHash;
+      });
+    }
+    
+    thisApp.activatePage(pagesMatchingHash.length ? pagesMatchingHash[0].id : thisApp.pages[0].id);
+    
+
+    
+    /* poniższy wariant nie działa, szukam błędu
     
     if (window.location.hash.length > 2){
-      const idFromHash = window.location.hash.replace('#/','');
+      const idFromHash = window.location.hash.replace('#/', '');
       
       for(let page of thisApp.pages){
         if(page.id == idFromHash){
@@ -83,13 +96,13 @@ const app = {
         }
       }
       
-    }
+    } 
     
     if (pagesMatchingHash){
       thisApp.activatePage(pagesMatchingHash[0].id);
     } else {
       thisApp.activatePage(thisApp.pages[0].id);
-    }
+    }; */
     
     for(let link of thisApp.navLinks){
       link.addEventListener('click', function(event){
@@ -113,7 +126,7 @@ const app = {
     }
     
     for (let page of thisApp.pages){
-      page.classList.toggle(classNames.pages.active, page.id ==  pageId);
+      page.classList.toggle(classNames.pages.active, page.id == pageId);
     }
     
     window.location.hash = '#/' + pageId;
@@ -124,5 +137,8 @@ const app = {
 
 };
 app.init();
+app.initPages();
+app.initData();
+app.initCart();
 
 
