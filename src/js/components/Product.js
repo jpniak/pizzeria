@@ -56,8 +56,6 @@ export class Product {
 
     /* START: click event listener to trigger */
     trigger.addEventListener('click', function (event) {
-      //zamiast trigger może byc thisProduct.accordionTrigger zdefiniowany wyżej - działa, sprawdziłem :-)
-      //trigger to moja nazwa zmiennej, dlatego na razie zostaje :-)
 
       /* prevent default action for event */
       event.preventDefault();
@@ -66,7 +64,9 @@ export class Product {
       thisProduct.element.classList.toggle('active');
 
       /* find all active products */
-      const activeProducts = document.querySelectorAll(select.all.menuProductsActive);
+      
+      const activeProducts = document.querySelectorAll('.product');
+      //const activeProducts = document.querySelectorAll(select.all.menuProductsActive);
 
       //const activeProducts = document.querySelectorAll('.product');
 
