@@ -100,7 +100,7 @@ export const settings = {
     defaultMax: 9,
   },
   datePicker: {
-    maxDaysInFuture: 14,
+    maxDaysInFuture: 28,
   },
   cart: {
     defaultDeliveryFee: 20,
