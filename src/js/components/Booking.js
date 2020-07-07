@@ -1,4 +1,4 @@
-import {templates, select, settings} from '../settings.js';
+import {templates, select, settings, classNames} from '../settings.js';
 import {AmountWidget} from './AmountWidget.js';
 import {DatePicker} from './DatePicker.js';
 import {HourPicker} from './HourPicker.js';
@@ -28,8 +28,7 @@ export class Booking {
     thisBooking.dom.hoursAmount = thisBooking.dom.wrapper.querySelector(select.booking.hoursAmount);
     thisBooking.dom.datePicker = thisBooking.dom.wrapper.querySelector(select.widgets.datePicker.wrapper);
     thisBooking.dom.hourPicker = thisBooking.dom.wrapper.querySelector(select.widgets.hourPicker.wrapper);
-
-    
+    thisBooking.dom.tables = thisBooking.dom.wrapper.querySelectorAll(select.booking.tables);    
     
   }
 
@@ -40,6 +39,13 @@ export class Booking {
     thisBooking.hoursAmount = new AmountWidget(thisBooking.dom.hoursAmount);
     thisBooking.datePicker = new DatePicker(thisBooking.dom.datePicker);
     thisBooking.hourPicker = new HourPicker(thisBooking.dom.hourPicker);
+    
+    thisBooking.dom.wrapper.addEventListener('myEvent', function(){
+      thisBooking.updateDOM();
+    });
+
+    
+    
   }
   
   getData() {
@@ -121,7 +127,7 @@ export class Booking {
     //console.log('minDate: ', minDate);
     //console.log('maxDate: ', maxDate);
 
-    /* pętla iterująca po eventsRepeat - odpalametodę makeBooked na repeat eventach, ale pod poniższym warunkiem */
+    /* pętla iterująca po eventsRepeat - odpala metodę makeBooked na repeat eventach, ale pod poniższym warunkiem */
     
     for(let eventRepeat of eventsRepeat) {
       //console.log('eventRepeat ', eventRepeat);
@@ -130,10 +136,12 @@ export class Booking {
         //pętla iterująca po powtarzającym dniu z zakresu dni (datePicker) 
         for(let repeatDay = minDate; repeatDay <= maxDate; repeatDay = utils.addDays(repeatDay, 1)) {
           //console.log('repeatDay: ', repeatDay);
-          thisBooking.makeBooked(eventRepeat.date, eventRepeat.hour, eventRepeat.duration, eventRepeat.table);
+          thisBooking.makeBooked(utils.dateToStr(repeatDay), eventRepeat.hour, eventRepeat.duration, eventRepeat.table);
         }
       }
     }
+    
+    thisBooking.updateDOM();
   }
   
   makeBooked(date, hour, duration, table){
@@ -158,4 +166,33 @@ export class Booking {
     }
     console.log(thisBooking.booked);
   }
-} 
+  
+  updateDOM() {
+    const thisBooking = this;
+    console.log('updateDOM działa :)');
+
+    
+    thisBooking.date = thisBooking.datePicker.value;
+    thisBooking.hour = utils.hourToNumber(thisBooking.hourPicker.value);
+
+    /* pętla iterująca po stolikach */
+    for(let table of thisBooking.dom.tables) {
+
+      let numberOfTable = table.getAttribute(settings.booking.tableIdAttribute); // tu musi być zmienna nie const
+
+      numberOfTable = parseInt(numberOfTable);
+      console.log('table: ', numberOfTable);
+
+      table.classList.remove(classNames.booking.tableSelected);
+
+      if(thisBooking.booked[thisBooking.date] && 
+        thisBooking.booked[thisBooking.date][thisBooking.hour] &&
+        thisBooking.booked[thisBooking.date][thisBooking.hour].includes(numberOfTable)) {
+        table.classList.add(classNames.booking.tableBooked);
+      } else {
+        table.classList.remove(classNames.booking.tableBooked);
+      }
+
+    }
+  }
+}
