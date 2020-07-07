@@ -175,7 +175,7 @@
               "price": 1,
               "default": true
             },
-            "olives": {
+            "olives_salad": {
               "label": "Olives",
               "price": 1,
               "default": true
@@ -206,7 +206,7 @@
   "event": [
     {
       "id": 1,
-      "date": "2019-01-01",
+      "date": "2020-07-07",
       "hour": "12:30",
       "table": 1,
       "repeat": false,
