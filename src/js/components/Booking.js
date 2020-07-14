@@ -13,6 +13,8 @@ export class Booking {
     thisBooking.render(booking);
     thisBooking.initWidgets();
     thisBooking.getData();
+    thisBooking.selectTable();
+
 
   }
 
@@ -29,6 +31,11 @@ export class Booking {
     thisBooking.dom.datePicker = thisBooking.dom.wrapper.querySelector(select.widgets.datePicker.wrapper);
     thisBooking.dom.hourPicker = thisBooking.dom.wrapper.querySelector(select.widgets.hourPicker.wrapper);
     thisBooking.dom.tables = thisBooking.dom.wrapper.querySelectorAll(select.booking.tables);    
+    thisBooking.dom.starters = thisBooking.dom.wrapper.querySelectorAll(select.booking.starters);
+    thisBooking.dom.phone = thisBooking.dom.wrapper.querySelector(select.booking.phone);
+    thisBooking.dom.address = thisBooking.dom.wrapper.querySelector(select.booking.address);
+    thisBooking.dom.form = thisBooking.dom.wrapper.querySelector(select.booking.form);
+
     
   }
 
@@ -43,6 +50,12 @@ export class Booking {
     thisBooking.dom.wrapper.addEventListener('myEvent', function(){
       thisBooking.updateDOM();
     });
+    
+    thisBooking.dom.form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      thisBooking.sendReservation();
+    });
+
 
     
     
@@ -195,4 +208,71 @@ export class Booking {
 
     }
   }
-}
+  
+  selectTable(){
+    const thisBooking = this;
+    for(let table of thisBooking.dom.tables) {
+      table.addEventListener('click', function(event){
+        event.preventDefault();
+
+        let tableId = table.getAttribute(settings.booking.tableIdAttribute); 
+        tableId = parseInt(tableId); 
+    
+        if(!table.classList.contains(classNames.booking.tableBooked)) {
+          table.classList.add(classNames.booking.tableBooked);
+          alert('Congratulations!!! You have just booked a table.');
+        } 
+        thisBooking.tableSelected = tableId;  
+
+
+        if(table.classList.contains(classNames.booking.tableBooked)) {
+          alert('This table has been already booked! Choose the other one.');
+        } else if(!table.classList.contains(classNames.booking.tableBooked)) {
+          table.classList.add(classNames.booking.tableSelected);          
+        } else {
+          for(let table of thisBooking.dom.tables) {
+            table.classList.remove(classNames.booking.tableSelected);             
+          }
+          table.classList.add(classNames.booking.tableSelected);
+          thisBooking.tableSelected = tableId;
+        }        
+      });
+    }
+  }
+  
+  
+  sendReservation() {
+    const thisBooking = this;
+    const url = settings.db.url + '/' + settings.db.booking;
+    const payload = {
+      date: thisBooking.date,
+      hour: utils.numberToHour(thisBooking.hour),
+      table: thisBooking.tableSelected,
+      people: thisBooking.peopleAmount.value,
+      duration: thisBooking.hoursAmount.value,      
+      phone: thisBooking.dom.phone.value,
+      //address: thisBooking.dom.address.value, //to mi nie działa
+      starters: [],
+    };
+    for(let starter of thisBooking.dom.starters){ // to niestety też nie.
+      payload.starters.push(starter.value); //próbowałem zmieniać querySelector/All pętle in/of nie pomogło
+    }
+
+    
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+    fetch(url, options)
+      .then(function(resonse) {
+        return resonse.json();        
+      }).then(function(parsedResponse) {
+        console.log('parsedResponse: ', parsedResponse);
+        thisBooking.makeBooked(payload.date, payload.hour, payload.duration, payload.table);
+        thisBooking.updateDOM();
+      });
+  }
+} 	
